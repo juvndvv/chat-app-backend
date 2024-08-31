@@ -22,33 +22,7 @@ final class TextMessage extends Entity
     private MessageContent $content;
     private DateTimeValueObject $createdAt;
     private DateTimeValueObject $updatedAt;
-
-    /**
-     * Constructor for the TextMessage entity.
-     *
-     * Initializes a TextMessage instance with the provided values.
-     *
-     * @param string|null $id Unique identifier for the message.
-     * @param string|null $userId The user ID who sent the message.
-     * @param string|null $content The content of the message.
-     * @param DateTimeImmutable|null $createdAt Timestamp when the message was created.
-     * @param DateTimeImmutable|null $updatedAt Timestamp when the message was last updated.
-     * @throws InvalidArgumentException If any argument is invalid.
-     */
-    public function __construct(
-        ?string            $id = null,
-        ?string            $userId = null,
-        ?string            $content = null,
-        ?DateTimeImmutable $createdAt = null,
-        ?DateTimeImmutable $updatedAt = null
-    )
-    {
-        if ($id !== null) $this->id = MessageId::create($id);
-        if ($userId !== null) $this->userId = UserId::create($userId);
-        if ($content !== null) $this->content = MessageContent::create($content);
-        if ($createdAt !== null) $this->createdAt = DateTimeValueObject::create($createdAt);
-        if ($updatedAt !== null) $this->updatedAt = DateTimeValueObject::create($updatedAt);
-    }
+    private DateTimeValueObject $deletedAt;
 
     /**
      * Gets the unique identifier of the message.
@@ -125,6 +99,20 @@ final class TextMessage extends Entity
         return $this->updatedAt->value();
     }
 
+    public function getDeletedAt(): DateTimeImmutable
+    {
+        if (!isset($this->deletedAt)) {
+            throw new LogicException('Message\'s deletedAt is not set');
+        }
+
+        return $this->deletedAt->value();
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->getDeletedAt() !== null;
+    }
+
     /**
      * Sets the unique identifier of the message.
      *
@@ -147,11 +135,7 @@ final class TextMessage extends Entity
      */
     public function setUserId(string $userId): self
     {
-        try {
-            $this->userId = UserId::create($userId);
-        } catch (InvalidArgumentException $e) {
-            // Optionally handle or log the exception
-        }
+        $this->userId = UserId::create($userId);
         return $this;
     }
 
@@ -191,6 +175,12 @@ final class TextMessage extends Entity
     public function setUpdatedAt(DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = DateTimeValueObject::create($updatedAt);
+        return $this;
+    }
+
+    public function setDeletedAt(?DateTimeImmutable $deletedAt): self
+    {
+        $this->deletedAt = DateTimeValueObject::create($deletedAt);
         return $this;
     }
 
@@ -252,7 +242,8 @@ final class TextMessage extends Entity
                 ->setUserId($userId)
                 ->setContent($text)
                 ->setCreatedAt($now)
-                ->setUpdatedAt($now);
+                ->setUpdatedAt($now)
+                ->setDeletedAt(null); // default
 
             // TODO create event
 
