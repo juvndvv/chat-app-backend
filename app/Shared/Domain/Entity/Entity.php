@@ -2,6 +2,8 @@
 
 namespace App\Shared\Domain\Entity;
 
+use Closure;
+
 abstract class Entity
 {
     protected array $events = [];
@@ -19,5 +21,15 @@ abstract class Entity
             }
         }
         return true;
+    }
+
+    /**
+     * Builds a new instance of the Entity without any preset values.
+     *
+     * @return self A new instance of the Entity.
+     */
+    public static function build(): static
+    {
+        return new static();
     }
 }

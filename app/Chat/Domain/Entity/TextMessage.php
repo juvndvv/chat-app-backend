@@ -25,6 +25,77 @@ final class TextMessage extends Entity
     private DateTimeValueObject $deletedAt;
 
     /**
+     * Sets the unique identifier of the message.
+     *
+     * @param string $id The message ID.
+     * @return self
+     * @throws InvalidArgumentException If the ID is invalid.
+     */
+    public function setId(string $id): self
+    {
+        $this->id = MessageId::create($id);
+        return $this;
+    }
+
+    /**
+     * Sets the user ID who sent the message.
+     *
+     * @param string $userId The user ID.
+     * @return self
+     * @throws InvalidArgumentException If the user ID is invalid.
+     */
+    public function setUserId(string $userId): self
+    {
+        $this->userId = UserId::create($userId);
+        return $this;
+    }
+
+    /**
+     * Sets the content of the message.
+     *
+     * @param string $content The message content.
+     * @return self
+     * @throws InvalidArgumentException If the content is invalid.
+     */
+    public function setContent(string $content): self
+    {
+        $this->content = MessageContent::create(trim($content));
+        return $this;
+    }
+
+    /**
+     * Sets the timestamp when the message was created.
+     *
+     * @param DateTimeImmutable $createdAt The creation timestamp.
+     * @return self
+     * @throws InvalidArgumentException If the timestamp is invalid.
+     */
+    public function setCreatedAt(DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = DateTimeValueObject::create($createdAt);
+        return $this;
+    }
+
+    /**
+     * Sets the timestamp when the message was last updated.
+     *
+     * @param DateTimeImmutable $updatedAt The last update timestamp.
+     * @return self
+     * @throws InvalidArgumentException If the timestamp is invalid.
+     */
+    public function setUpdatedAt(DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = DateTimeValueObject::create($updatedAt);
+        return $this;
+    }
+
+    public function setDeletedAt(?DateTimeImmutable $deletedAt): self
+    {
+        $this->deletedAt = DateTimeValueObject::create($deletedAt);
+        return $this;
+    }
+
+    /**
      * Gets the unique identifier of the message.
      *
      * @return string The message ID.
@@ -114,77 +185,6 @@ final class TextMessage extends Entity
     }
 
     /**
-     * Sets the unique identifier of the message.
-     *
-     * @param string $id The message ID.
-     * @return self
-     * @throws InvalidArgumentException If the ID is invalid.
-     */
-    public function setId(string $id): self
-    {
-        $this->id = MessageId::create($id);
-        return $this;
-    }
-
-    /**
-     * Sets the user ID who sent the message.
-     *
-     * @param string $userId The user ID.
-     * @return self
-     * @throws InvalidArgumentException If the user ID is invalid.
-     */
-    public function setUserId(string $userId): self
-    {
-        $this->userId = UserId::create($userId);
-        return $this;
-    }
-
-    /**
-     * Sets the content of the message.
-     *
-     * @param string $content The message content.
-     * @return self
-     * @throws InvalidArgumentException If the content is invalid.
-     */
-    public function setContent(string $content): self
-    {
-        $this->content = MessageContent::create(trim($content));
-        return $this;
-    }
-
-    /**
-     * Sets the timestamp when the message was created.
-     *
-     * @param DateTimeImmutable $createdAt The creation timestamp.
-     * @return self
-     * @throws InvalidArgumentException If the timestamp is invalid.
-     */
-    public function setCreatedAt(DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = DateTimeValueObject::create($createdAt);
-        return $this;
-    }
-
-    /**
-     * Sets the timestamp when the message was last updated.
-     *
-     * @param DateTimeImmutable $updatedAt The last update timestamp.
-     * @return self
-     * @throws InvalidArgumentException If the timestamp is invalid.
-     */
-    public function setUpdatedAt(DateTimeImmutable $updatedAt): self
-    {
-        $this->updatedAt = DateTimeValueObject::create($updatedAt);
-        return $this;
-    }
-
-    public function setDeletedAt(?DateTimeImmutable $deletedAt): self
-    {
-        $this->deletedAt = DateTimeValueObject::create($deletedAt);
-        return $this;
-    }
-
-    /**
      * Updates the content of the message and marks it as updated.
      *
      * @param string $content The new message content.
@@ -206,16 +206,6 @@ final class TextMessage extends Entity
     private function performUpdate(): void
     {
         $this->updatedAt = DateTimeValueObject::create(new DateTimeImmutable());
-    }
-
-    /**
-     * Builds a new instance of the TextMessage entity without any preset values.
-     *
-     * @return self A new instance of the TextMessage entity.
-     */
-    public static function build(): self
-    {
-        return new self();
     }
 
     /**

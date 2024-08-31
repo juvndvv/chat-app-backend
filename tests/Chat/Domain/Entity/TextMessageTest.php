@@ -4,7 +4,7 @@ namespace Tests\Chat\Domain\Entity;
 
 use Tests\TestCase;
 
-final class MessageTest extends TestCase
+final class TextMessageTest extends TestCase
 {
 
 }

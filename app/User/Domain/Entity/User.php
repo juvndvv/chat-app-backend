@@ -29,6 +29,120 @@ final class User extends Entity
     private DateTimeValueObject $createdAt;
     private DateTimeValueObject $updatedAt;
 
+    /**
+     * Sets the user's unique identifier.
+     *
+     * @param string $id The user's ID.
+     * @return self
+     *
+     * @throws InvalidArgumentException If the ID is invalid.
+     */
+    public function setId(string $id): self
+    {
+        $this->id = UserId::create($id);
+        return $this;
+    }
+
+    /**
+     * Sets the user's first name.
+     *
+     * @param string $name The user's first name.
+     * @return self
+     *
+     * @throws InvalidArgumentException If the name is invalid.
+     */
+    public function setName(string $name): self
+    {
+        $this->name = UserName::create(trim($name));
+        return $this;
+    }
+
+    /**
+     * Sets the user's first last name.
+     *
+     * @param string $firstLastName The user's first last name.
+     * @return self
+     *
+     * @throws InvalidArgumentException If the first last name is invalid.
+     */
+    public function setFirstLastName(string $firstLastName): self
+    {
+        $this->firstLastName = UserFirstLastName::create(trim($firstLastName));
+        return $this;
+    }
+
+    /**
+     * Sets the user's second last name.
+     *
+     * @param string|null $secondLastName The user's second last name (optional).
+     * @return self
+     *
+     * @throws InvalidArgumentException If the second last name is invalid.
+     */
+    public function setSecondLastName(?string $secondLastName): self
+    {
+        if ($secondLastName !== null) {
+            $secondLastName = trim($secondLastName);
+        }
+
+        $this->secondLastName = UserSecondLastName::create($secondLastName);
+        return $this;
+    }
+
+    /**
+     * Sets the user's email address.
+     *
+     * @param string $email The user's email.
+     * @return self
+     *
+     * @throws InvalidArgumentException If the email is invalid.
+     */
+    public function setEmail(string $email): self
+    {
+        $this->email = UserEmail::create(trim($email));
+        return $this;
+    }
+
+    /**
+     * Set's the user can exec command flag.
+     *
+     * @param bool $canExecCommands
+     * @return self
+     */
+    public function setCanExecCommands(bool $canExecCommands): self
+    {
+        $this->canExecCommands = UserCanExecCommands::create($canExecCommands);
+        return $this;
+    }
+
+    /**
+     * Sets the user's creation timestamp.
+     *
+     * @param DateTimeImmutable $createdAt The creation timestamp.
+     * @return self
+     *
+     * @throws InvalidArgumentException If the timestamp is invalid.
+     */
+    public function setCreatedAt(DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = DateTimeValueObject::create($createdAt);
+        return $this;
+    }
+
+    /**
+     * Sets the user's last update timestamp.
+     *
+     * @param DateTimeImmutable $updatedAt The last update timestamp.
+     * @return self
+     *
+     * @throws InvalidArgumentException If the timestamp is invalid.
+     */
+    public function setUpdatedAt(DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = DateTimeValueObject::create($updatedAt);
+        return $this;
+    }
+
     /*
      * GETTERS
      */
@@ -164,124 +278,6 @@ final class User extends Entity
         }
 
         return $this->updatedAt->value();
-    }
-
-    /*
-     * SETTERS
-     */
-
-    /**
-     * Sets the user's unique identifier.
-     *
-     * @param string $id The user's ID.
-     * @return self
-     *
-     * @throws InvalidArgumentException If the ID is invalid.
-     */
-    public function setId(string $id): self
-    {
-        $this->id = UserId::create($id);
-        return $this;
-    }
-
-    /**
-     * Sets the user's first name.
-     *
-     * @param string $name The user's first name.
-     * @return self
-     *
-     * @throws InvalidArgumentException If the name is invalid.
-     */
-    public function setName(string $name): self
-    {
-        $this->name = UserName::create(trim($name));
-        return $this;
-    }
-
-    /**
-     * Sets the user's first last name.
-     *
-     * @param string $firstLastName The user's first last name.
-     * @return self
-     *
-     * @throws InvalidArgumentException If the first last name is invalid.
-     */
-    public function setFirstLastName(string $firstLastName): self
-    {
-        $this->firstLastName = UserFirstLastName::create(trim($firstLastName));
-        return $this;
-    }
-
-    /**
-     * Sets the user's second last name.
-     *
-     * @param string|null $secondLastName The user's second last name (optional).
-     * @return self
-     *
-     * @throws InvalidArgumentException If the second last name is invalid.
-     */
-    public function setSecondLastName(?string $secondLastName): self
-    {
-        if ($secondLastName !== null) {
-            $secondLastName = trim($secondLastName);
-        }
-
-        $this->secondLastName = UserSecondLastName::create($secondLastName);
-        return $this;
-    }
-
-    /**
-     * Sets the user's email address.
-     *
-     * @param string $email The user's email.
-     * @return self
-     *
-     * @throws InvalidArgumentException If the email is invalid.
-     */
-    public function setEmail(string $email): self
-    {
-        $this->email = UserEmail::create(trim($email));
-        return $this;
-    }
-
-    /**
-     * Set's the user can exec command flag.
-     *
-     * @param bool $canExecCommands
-     * @return self
-     */
-    public function setCanExecCommands(bool $canExecCommands): self
-    {
-        $this->canExecCommands = UserCanExecCommands::create($canExecCommands);
-        return $this;
-    }
-
-    /**
-     * Sets the user's creation timestamp.
-     *
-     * @param DateTimeImmutable $createdAt The creation timestamp.
-     * @return self
-     *
-     * @throws InvalidArgumentException If the timestamp is invalid.
-     */
-    public function setCreatedAt(DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = DateTimeValueObject::create($createdAt);
-        return $this;
-    }
-
-    /**
-     * Sets the user's last update timestamp.
-     *
-     * @param DateTimeImmutable $updatedAt The last update timestamp.
-     * @return self
-     *
-     * @throws InvalidArgumentException If the timestamp is invalid.
-     */
-    public function setUpdatedAt(DateTimeImmutable $updatedAt): self
-    {
-        $this->updatedAt = DateTimeValueObject::create($updatedAt);
-        return $this;
     }
 
     /*
@@ -465,16 +461,6 @@ final class User extends Entity
         if (count($unsetFields) > 0) {
             throw new LogicException('Cannot retrieve full name without setting ' . implode(', ', $unsetFields));
         }
-    }
-
-    /**
-     * Builds a new instance of the User entity without any preset values.
-     *
-     * @return self A new instance of the User entity.
-     */
-    public static function build(): self
-    {
-        return new self();
     }
 
     /**
