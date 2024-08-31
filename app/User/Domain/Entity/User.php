@@ -29,43 +29,6 @@ final class User extends Entity
     private DateTimeValueObject $createdAt;
     private DateTimeValueObject $updatedAt;
 
-    /**
-     * Constructor for the User entity.
-     *
-     * Initializes the User entity with the provided values.
-     *
-     * @param string|null $id Unique identifier for the user.
-     * @param string|null $name User's first name.
-     * @param string|null $firstLastName User's first last name.
-     * @param string|null $secondLastName User's second last name (optional).
-     * @param string|null $email User's email address.
-     * @param bool|null $canExecCommands Indicates if the user can execute commands.
-     * @param DateTimeImmutable|null $createdAt Timestamp when the user was created.
-     * @param DateTimeImmutable|null $updatedAt Timestamp when the user was last updated.
-     *
-     * @throws InvalidArgumentException If any provided value is invalid.
-     */
-    private function __construct(
-        ?string            $id = null,
-        ?string            $name = null,
-        ?string            $firstLastName = null,
-        ?string            $secondLastName = null,
-        ?string            $email = null,
-        ?bool              $canExecCommands = false,
-        ?DateTimeImmutable $createdAt = null,
-        ?DateTimeImmutable $updatedAt = null
-    )
-    {
-        if ($id !== null) $this->id = UserId::create($id);
-        if ($name !== null) $this->name = UserName::create($name);
-        if ($firstLastName !== null) $this->firstLastName = UserFirstLastName::create($firstLastName);
-        if ($secondLastName !== null) $this->secondLastName = UserSecondLastName::create($secondLastName);
-        if ($email !== null) $this->email = UserEmail::create($email);
-        if ($canExecCommands !== null) $this->canExecCommands = UserCanExecCommands::create($canExecCommands);
-        if ($createdAt !== null) $this->createdAt = DateTimeValueObject::create($createdAt);
-        if ($updatedAt !== null) $this->updatedAt = DateTimeValueObject::create($updatedAt);
-    }
-
     /*
      * GETTERS
      */
