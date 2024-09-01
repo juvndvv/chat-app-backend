@@ -42,9 +42,10 @@ abstract class AbstractCustomCollection
     {
         static::ensureIsCorrectInstance($value);
 
-        for ($i = 0; $i < count($this->list); $i++) {
-            if (static::getValue($this->list[$i]) === static::getValue($value)) {
+        foreach ($this->list as $i => $item) {
+            if (static::getValue($item) === static::getValue($value)) {
                 unset($this->list[$i]);
+                $this->list = array_values($this->list); // Reindexa el array
                 return true;
             }
         }

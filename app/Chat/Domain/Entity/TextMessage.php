@@ -10,41 +10,12 @@ use App\Chat\Domain\ValueObject\MessageId;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\LogicException;
 use App\Shared\Domain\ValueObject\DateTimeValueObject;
-use App\User\Domain\ValueObject\UserId;
 use DateTimeImmutable;
 use Random\RandomException;
 
 final class TextMessage extends AbstractMessage
 {
-    private MessageId $id;
-    private UserId $userId;
     private MessageContent $content;
-
-    /**
-     * Sets the unique identifier of the message.
-     *
-     * @param string $id The message ID.
-     * @return self
-     * @throws InvalidArgumentException If the ID is invalid.
-     */
-    public function setId(string $id): self
-    {
-        $this->id = MessageId::create($id);
-        return $this;
-    }
-
-    /**
-     * Sets the user ID who sent the message.
-     *
-     * @param string $userId The user ID.
-     * @return self
-     * @throws InvalidArgumentException If the user ID is invalid.
-     */
-    public function setUserId(string $userId): self
-    {
-        $this->userId = UserId::create($userId);
-        return $this;
-    }
 
     /**
      * Sets the content of the message.
@@ -57,49 +28,6 @@ final class TextMessage extends AbstractMessage
     {
         $this->content = MessageContent::create(trim($content));
         return $this;
-    }
-
-    /**
-     * Sets the timestamp when the message was created.
-     *
-     * @param DateTimeImmutable $createdAt The creation timestamp.
-     * @return self
-     * @throws InvalidArgumentException If the timestamp is invalid.
-     */
-    public function setCreatedAt(DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = DateTimeValueObject::create($createdAt);
-        return $this;
-    }
-
-    /**
-     * Gets the unique identifier of the message.
-     *
-     * @return string The message ID.
-     * @throws LogicException If the message ID is not set.
-     */
-    public function getId(): string
-    {
-        if (!isset($this->id)) {
-            throw new LogicException('Message\'s id is not set');
-        }
-
-        return $this->id->value();
-    }
-
-    /**
-     * Gets the user ID who sent the message.
-     *
-     * @return string The user ID.
-     * @throws LogicException If the user ID is not set.
-     */
-    public function getUserId(): string
-    {
-        if (!isset($this->userId)) {
-            throw new LogicException('Message\'s userId is not set');
-        }
-
-        return $this->userId->value();
     }
 
     /**

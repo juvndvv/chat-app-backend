@@ -2,6 +2,7 @@
 
 namespace App\Shared\Domain\Entity;
 
+use App\Chat\Domain\ValueObject\OptionalDateTimeValueObject;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\LogicException;
 use App\Shared\Domain\ValueObject\DateTimeValueObject;
@@ -10,10 +11,9 @@ use DateTimeImmutable;
 abstract class Entity
 {
     protected array $events = [];
-
     protected DateTimeValueObject $createdAt;
     protected DateTimeValueObject $updatedAt;
-    protected DateTimeValueObject $deletedAt;
+    protected OptionalDateTimeValueObject $deletedAt;
 
     abstract function getId(): string;
     abstract function setId(string $id): self;
@@ -56,9 +56,9 @@ abstract class Entity
         return $this;
     }
 
-    public function setDeletedAt(DateTimeImmutable $deletedAt): self
+    public function setDeletedAt(?DateTimeImmutable $deletedAt): self
     {
-        $this->deletedAt = DateTimeValueObject::create($deletedAt);
+        $this->deletedAt = OptionalDateTimeValueObject::create($deletedAt);
         return $this;
     }
 
@@ -80,13 +80,13 @@ abstract class Entity
         return $this->updatedAt->value();
     }
 
-    public function getDeletedAt(): DateTimeImmutable
+    public function getDeletedAt(): ?DateTimeImmutable
     {
         if (!isset($this->deletedAt)) {
             throw new LogicException('The deleted at must be set');
         }
 
-        return $this->deletedAt->value();
+        return $this->deletedAt->isNotNull() ? $this->deletedAt->value() : null;
     }
 
     /**
@@ -94,7 +94,11 @@ abstract class Entity
      */
     public function isDeleted(): bool
     {
-        return $this->getDeletedAt() !== null;
+        if (!isset($this->deletedAt)) {
+            throw new LogicException('The deleted at must be set');
+        }
+
+        return $this->deletedAt->isNotNull();
     }
 
     /**
@@ -102,7 +106,7 @@ abstract class Entity
      */
     public function delete(): void
     {
-        $this->deletedAt = DateTimeValueObject::create(new DateTimeImmutable());
+        $this->deletedAt = OptionalDateTimeValueObject::create(new DateTimeImmutable());
     }
 
     /**
