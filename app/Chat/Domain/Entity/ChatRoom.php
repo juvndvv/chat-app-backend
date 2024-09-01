@@ -313,6 +313,7 @@ final class ChatRoom extends Entity
      * @param string $member The ID of the member to remove.
      * @throws LogicException If the members list is not set.
      * @throws UserDoesNotPertainsToChatRoomException If the member is not in the chat room.
+     * @throws InvalidArgumentException If the user's id is not valid
      */
     public function removeMember(string $member): void
     {
@@ -383,7 +384,6 @@ final class ChatRoom extends Entity
             throw new UserDoesNotPertainsToChatRoomException();
         }
 
-        // TODO generate event
         $event = new UserSawChatRoomEvent($userId);
         $this->addEvent($event);
     }
