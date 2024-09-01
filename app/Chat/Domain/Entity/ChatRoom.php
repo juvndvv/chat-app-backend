@@ -224,6 +224,21 @@ final class ChatRoom extends Entity
     }
 
     /**
+     * Gets the number of messages in the chat room.
+     *
+     * @return int The number of members.
+     * @throws LogicException If the members are not set.
+     */
+    public function getMessagesCount(): int
+    {
+        if (!isset($this->messages)) {
+            throw new LogicException('ChatRoom\'s messages has not been set');
+        }
+
+        return $this->messages->count();
+    }
+
+    /**
      * Checks if the chat room is deleted.
      *
      * @return bool True if the chat room is deleted, otherwise false.
