@@ -7,7 +7,6 @@ namespace App\Chat\Domain\Entity;
 use App\Chat\Domain\Exception\MessageCreationException;
 use App\Chat\Domain\ValueObject\MessageContent;
 use App\Chat\Domain\ValueObject\MessageId;
-use App\Shared\Domain\Entity\Entity;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\LogicException;
 use App\Shared\Domain\ValueObject\DateTimeValueObject;
@@ -15,14 +14,11 @@ use App\User\Domain\ValueObject\UserId;
 use DateTimeImmutable;
 use Random\RandomException;
 
-final class TextMessage extends Entity
+final class TextMessage extends AbstractMessage
 {
     private MessageId $id;
     private UserId $userId;
     private MessageContent $content;
-    private DateTimeValueObject $createdAt;
-    private DateTimeValueObject $updatedAt;
-    private DateTimeValueObject $deletedAt;
 
     /**
      * Sets the unique identifier of the message.
@@ -77,25 +73,6 @@ final class TextMessage extends Entity
     }
 
     /**
-     * Sets the timestamp when the message was last updated.
-     *
-     * @param DateTimeImmutable $updatedAt The last update timestamp.
-     * @return self
-     * @throws InvalidArgumentException If the timestamp is invalid.
-     */
-    public function setUpdatedAt(DateTimeImmutable $updatedAt): self
-    {
-        $this->updatedAt = DateTimeValueObject::create($updatedAt);
-        return $this;
-    }
-
-    public function setDeletedAt(?DateTimeImmutable $deletedAt): self
-    {
-        $this->deletedAt = DateTimeValueObject::create($deletedAt);
-        return $this;
-    }
-
-    /**
      * Gets the unique identifier of the message.
      *
      * @return string The message ID.
@@ -138,50 +115,6 @@ final class TextMessage extends Entity
         }
 
         return $this->content->value();
-    }
-
-    /**
-     * Gets the timestamp when the message was created.
-     *
-     * @return DateTimeImmutable The creation timestamp.
-     * @throws LogicException If the creation timestamp is not set.
-     */
-    public function getCreatedAt(): DateTimeImmutable
-    {
-        if (!isset($this->createdAt)) {
-            throw new LogicException('Message\'s createdAt is not set');
-        }
-
-        return $this->createdAt->value();
-    }
-
-    /**
-     * Gets the timestamp when the message was last updated.
-     *
-     * @return DateTimeImmutable The last update timestamp.
-     * @throws LogicException If the last update timestamp is not set.
-     */
-    public function getUpdatedAt(): DateTimeImmutable
-    {
-        if (!isset($this->updatedAt)) {
-            throw new LogicException('Message\'s updatedAt is not set');
-        }
-
-        return $this->updatedAt->value();
-    }
-
-    public function getDeletedAt(): DateTimeImmutable
-    {
-        if (!isset($this->deletedAt)) {
-            throw new LogicException('Message\'s deletedAt is not set');
-        }
-
-        return $this->deletedAt->value();
-    }
-
-    public function isDeleted(): bool
-    {
-        return $this->getDeletedAt() !== null;
     }
 
     /**

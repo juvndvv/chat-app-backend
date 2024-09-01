@@ -5,7 +5,6 @@ namespace App\Shared\Domain\Entity;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\LogicException;
 use App\Shared\Domain\ValueObject\DateTimeValueObject;
-use Closure;
 use DateTimeImmutable;
 
 abstract class Entity
@@ -15,6 +14,9 @@ abstract class Entity
     protected DateTimeValueObject $createdAt;
     protected DateTimeValueObject $updatedAt;
     protected DateTimeValueObject $deletedAt;
+
+    abstract function getId(): string;
+    abstract function setId(string $id): self;
 
     public function getEvents(): array
     {
@@ -28,6 +30,7 @@ abstract class Entity
                 return false;
             }
         }
+
         return true;
     }
 
@@ -84,6 +87,22 @@ abstract class Entity
         }
 
         return $this->deletedAt->value();
+    }
+
+    /**
+     * @throws LogicException
+     */
+    public function isDeleted(): bool
+    {
+        return $this->getDeletedAt() !== null;
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function delete(): void
+    {
+        $this->deletedAt = DateTimeValueObject::create(new DateTimeImmutable());
     }
 
     /**

@@ -7,9 +7,10 @@ namespace App\Chat\Domain\Entity;
 use App\Chat\Domain\Exception\ChatRoomCannotBeEmptyException;
 use App\Chat\Domain\ValueObject\ChatRoomDescription;
 use App\Chat\Domain\ValueObject\ChatRoomId;
+use App\Chat\Domain\ValueObject\ChatRoomMembersCollection;
 use App\Chat\Domain\ValueObject\ChatRoomName;
+use App\Chat\Domain\ValueObject\ChatRoomMessageCollection;
 use App\Chat\Domain\ValueObject\MessageId;
-use App\Helpers\ValueObjectList;
 use App\Shared\Domain\Entity\Entity;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\LogicException;
@@ -32,8 +33,8 @@ final class ChatRoom extends Entity
     private ChatRoomId $id;
     private ChatRoomName $name;
     private ChatRoomDescription $description;
-    private ValueObjectList $members;
-    private ValueObjectList $messages;
+    private ChatRoomMembersCollection $members;
+    private ChatRoomMessageCollection $messages;
     private UserId $creatorId;
 
     /**
@@ -89,12 +90,13 @@ final class ChatRoom extends Entity
             throw new ChatRoomCannotBeEmptyException();
         }
 
-        $this->members = new ValueObjectList();
+        $this->members = new ChatRoomMembersCollection();
 
         $this->members->set(array_map(
             function (string $member) {
                 return UserId::create($member);
-            }, $members));
+            }, $members)
+        );
 
         return $this;
     }
@@ -107,7 +109,7 @@ final class ChatRoom extends Entity
      */
     public function setMessages(array $messages): self
     {
-        $this->messages = new ValueObjectList();
+        $this->messages = new ChatRoomMessageCollection();
         $this->messages->set($messages);
         return $this;
     }
@@ -239,21 +241,6 @@ final class ChatRoom extends Entity
     }
 
     /**
-     * Checks if the chat room is deleted.
-     *
-     * @return bool True if the chat room is deleted, otherwise false.
-     * @throws LogicException If the deletion status is not set.
-     */
-    public function isDeleted(): bool
-    {
-        if (!isset($this->deletedAt)) {
-            throw new LogicException('The deleted at must be set');
-        }
-
-        return $this->deletedAt->value() !== null;
-    }
-
-    /**
      * Updates the name of the chat room.
      *
      * @param string $name The new name to set.
@@ -331,6 +318,7 @@ final class ChatRoom extends Entity
             throw new LogicException('Chat room\'s member variable is not set');
         }
 
+        $member = UserId::create($member);
         $success = $this->members->delete($member);
 
         if (!$success) {
@@ -366,7 +354,8 @@ final class ChatRoom extends Entity
      */
     public function hasMember(string $member): bool
     {
-        return $this->members->contains($member) || $this->creatorId->value() === $member;
+        $member = UserId::create($member);
+        return $this->members->contains($member) || $this->creatorId->value() === $member->value();
     }
 
     /**
@@ -375,7 +364,7 @@ final class ChatRoom extends Entity
      * @param string $message The ID of the message to check.
      * @return bool True if the message is in the chat room, otherwise false.
      */
-    public function hasMessage(string $message): bool
+    public function hasMessage(AbstractMessage $message): bool
     {
         return $this->messages->contains($message);
     }
