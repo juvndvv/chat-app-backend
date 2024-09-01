@@ -15,9 +15,7 @@ use App\Shared\Domain\Exception\LogicException;
 use App\Shared\Domain\Exception\MessageAlreadyInChatException;
 use App\Shared\Domain\Exception\UserAlreadyInChatRoomException;
 use App\Shared\Domain\Exception\UserDoesNotPertainsToChatRoomException;
-use App\Shared\Domain\ValueObject\DateTimeValueObject;
 use App\User\Domain\ValueObject\UserId;
-use DateTimeImmutable;
 
 final class ChatRoom extends Entity
 {
@@ -27,9 +25,6 @@ final class ChatRoom extends Entity
     private ValueObjectList $members;
     private ValueObjectList $messages;
     private UserId $creatorId;
-    private DateTimeValueObject $createdAt;
-    private DateTimeValueObject $updatedAt;
-    private DateTimeValueObject $deletedAt;
 
     public function setId(string $id): self
     {
@@ -74,24 +69,6 @@ final class ChatRoom extends Entity
     public function setCreatorId(string $creatorId): self
     {
         $this->creatorId = UserId::create($creatorId);
-        return $this;
-    }
-
-    public function setCreatedAt(DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = DateTimeValueObject::create($createdAt);
-        return $this;
-    }
-
-    public function setUpdatedAt(DateTimeImmutable $updatedAt): self
-    {
-        $this->updatedAt = DateTimeValueObject::create($updatedAt);
-        return $this;
-    }
-
-    public function setDeletedAt(DateTimeImmutable $deletedAt): self
-    {
-        $this->deletedAt = DateTimeValueObject::create($deletedAt);
         return $this;
     }
 
@@ -155,33 +132,6 @@ final class ChatRoom extends Entity
         return $this->messages->map(function (MessageId $messageId) {
             return $messageId->value();
         });
-    }
-
-    public function getCreatedAt(): DateTimeImmutable
-    {
-        if (!isset($this->createdAt)) {
-            throw new LogicException('The created at must be set');
-        }
-
-        return $this->createdAt->value();
-    }
-
-    public function getUpdatedAt(): DateTimeImmutable
-    {
-        if (!isset($this->updatedAt)) {
-            throw new LogicException('The updated at must be set');
-        }
-
-        return $this->updatedAt->value();
-    }
-
-    public function getDeletedAt(): DateTimeImmutable
-    {
-        if (!isset($this->deletedAt)) {
-            throw new LogicException('The deleted at must be set');
-        }
-
-        return $this->deletedAt->value();
     }
 
     public function isDeleted(): bool

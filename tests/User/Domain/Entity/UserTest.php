@@ -184,7 +184,6 @@ final class UserTest extends TestCase
         $user = User::build();
 
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('User\'s createdAt is not set');
         $user->getCreatedAt();
     }
 
@@ -199,7 +198,6 @@ final class UserTest extends TestCase
         $user = User::build();
 
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('User\'s updatedAt is not set');
         $user->getUpdatedAt();
     }
 

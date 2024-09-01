@@ -26,8 +26,6 @@ final class User extends Entity
     private UserSecondLastName $secondLastName;
     private UserEmail $email;
     private UserCanExecCommands $canExecCommands;
-    private DateTimeValueObject $createdAt;
-    private DateTimeValueObject $updatedAt;
 
     /**
      * Sets the user's unique identifier.
@@ -112,34 +110,6 @@ final class User extends Entity
     public function setCanExecCommands(bool $canExecCommands): self
     {
         $this->canExecCommands = UserCanExecCommands::create($canExecCommands);
-        return $this;
-    }
-
-    /**
-     * Sets the user's creation timestamp.
-     *
-     * @param DateTimeImmutable $createdAt The creation timestamp.
-     * @return self
-     *
-     * @throws InvalidArgumentException If the timestamp is invalid.
-     */
-    public function setCreatedAt(DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = DateTimeValueObject::create($createdAt);
-        return $this;
-    }
-
-    /**
-     * Sets the user's last update timestamp.
-     *
-     * @param DateTimeImmutable $updatedAt The last update timestamp.
-     * @return self
-     *
-     * @throws InvalidArgumentException If the timestamp is invalid.
-     */
-    public function setUpdatedAt(DateTimeImmutable $updatedAt): self
-    {
-        $this->updatedAt = DateTimeValueObject::create($updatedAt);
         return $this;
     }
 
@@ -248,36 +218,6 @@ final class User extends Entity
         }
 
         return $this->canExecCommands->value();
-    }
-
-    /**
-     * Gets the timestamp when the user was created.
-     *
-     * @return DateTimeImmutable The creation timestamp.
-     * @throws LogicException If user's createdAt is not set
-     */
-    public function getCreatedAt(): DateTimeImmutable
-    {
-        if (!isset($this->createdAt)) {
-            throw new LogicException('User\'s createdAt is not set');
-        }
-
-        return $this->createdAt->value();
-    }
-
-    /**
-     * Gets the timestamp when the user was last updated.
-     *
-     * @return DateTimeImmutable The last update timestamp.
-     * @throws LogicException If user's updatedAt is not set
-     */
-    public function getUpdatedAt(): DateTimeImmutable
-    {
-        if (!isset($this->updatedAt)) {
-            throw new LogicException('User\'s updatedAt is not set');
-        }
-
-        return $this->updatedAt->value();
     }
 
     /*
