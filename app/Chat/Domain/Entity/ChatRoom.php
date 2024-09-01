@@ -95,10 +95,19 @@ final class ChatRoom extends Entity
         return $this;
     }
 
+    public function getId(): string
+    {
+        if (!isset($this->id)) {
+            throw new LogicException('ChatRoom\'s id is not set');
+        }
+
+        return $this->id->value();
+    }
+
     public function getName(): string
     {
         if (!isset($this->name)) {
-            throw new LogicException('ChatRoom\'s has not been created');
+            throw new LogicException('ChatRoom\'s name is not set');
         }
 
         return $this->name->value();
