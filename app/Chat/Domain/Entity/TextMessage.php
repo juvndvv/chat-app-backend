@@ -9,7 +9,6 @@ use App\Chat\Domain\ValueObject\MessageContent;
 use App\Chat\Domain\ValueObject\MessageId;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\LogicException;
-use App\Shared\Domain\ValueObject\DateTimeValueObject;
 use DateTimeImmutable;
 use Random\RandomException;
 
