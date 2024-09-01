@@ -31,7 +31,7 @@ final class OptionalDateTimeValueObject extends DateTimeValueObject
         return $this->value;
     }
 
-    public static function create(?DateTimeImmutable $value): OptionalDateTimeValueObject
+    public static function create(?DateTimeImmutable $value): static
     {
         return new self($value);
     }
