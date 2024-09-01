@@ -7,7 +7,6 @@ namespace App\User\Domain\Entity;
 use App\Shared\Domain\Entity\Entity;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\LogicException;
-use App\Shared\Domain\ValueObject\DateTimeValueObject;
 use App\User\Domain\Exception\UserCreationException;
 use App\User\Domain\ValueObject\UserCanExecCommands;
 use App\User\Domain\ValueObject\UserEmail;
@@ -18,6 +17,15 @@ use App\User\Domain\ValueObject\UserSecondLastName;
 use DateTimeImmutable;
 use Random\RandomException;
 
+/**
+ * Represents a user in the system.
+ *
+ * The `User` class encapsulates the logic for managing user information, including their unique identifier, name, last names, email address, and command execution permissions.
+ * It provides methods for setting and getting user details, updating attributes, and creating new instances.
+ * It also includes functionality for bulk updating user attributes and validating required fields.
+ *
+ * @package App\User\Domain\Entity
+ */
 final class User extends Entity
 {
     private UserId $id;

@@ -18,6 +18,15 @@ use App\Shared\Domain\Exception\UserAlreadyInChatRoomException;
 use App\Shared\Domain\Exception\UserDoesNotPertainsToChatRoomException;
 use App\User\Domain\ValueObject\UserId;
 
+/**
+ * Represents a chat room.
+ *
+ * The `ChatRoom` class encapsulates the logic for managing a chat room, including member management, message handling, and general room information.
+ * It provides methods to add and remove members, add messages, and update the room's details.
+ *
+ * @package App\Chat\Domain\Entity
+ */
+
 final class ChatRoom extends Entity
 {
     private ChatRoomId $id;
@@ -277,6 +286,7 @@ final class ChatRoom extends Entity
      * @param string $newMember The ID of the member to add.
      * @throws LogicException If the members list is not set.
      * @throws UserAlreadyInChatRoomException If the member is already in the chat room.
+     * @throws InvalidArgumentException If the user's id is invalid
      */
     public function addMember(string $newMember): void
     {
@@ -320,6 +330,7 @@ final class ChatRoom extends Entity
      *
      * @param string $newMessage The ID of the message to add.
      * @throws MessageAlreadyInChatException If the message is already in the chat room.
+     * @throws InvalidArgumentException If the message's id is not valid
      */
     public function addMessage(string $newMessage): void
     {

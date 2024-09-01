@@ -33,3 +33,8 @@ clean:
 .PHONY: update
 update:
 	sail composer install
+
+# Example of a target for updating docs
+.PHONY: update-doc
+update-doc:
+	./phpDocumentor.phar -d app -t docs/code
