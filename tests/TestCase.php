@@ -6,7 +6,6 @@ use App\Chat\Domain\Entity\ChatRoom;
 use App\Chat\Domain\Entity\TextMessage;
 use App\Chat\Domain\ValueObject\ChatRoomId;
 use App\Chat\Domain\ValueObject\MessageId;
-use App\Helpers\MessageTypeEnum;
 use App\User\Domain\Entity\User;
 use App\User\Domain\ValueObject\UserId;
 use DateTimeImmutable;
@@ -53,6 +52,7 @@ abstract class TestCase extends BaseTestCase
     {
         $now = new DateTimeImmutable();
 
+        // Add users if they are not set
         if ($members === null) {
             $members = [];
 
@@ -61,6 +61,7 @@ abstract class TestCase extends BaseTestCase
             }
         }
 
+        // Add messages if they are not set
         if ($messages === null) {
             $messages = [];
 
@@ -96,6 +97,7 @@ abstract class TestCase extends BaseTestCase
     {
         $now = new DateTimeImmutable();
 
+        // Add viewers if they are not set
         if ($viewers === null) {
             for ($i = 0; $i < 10; $i++) {
                 $viewers[] = [

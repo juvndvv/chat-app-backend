@@ -384,7 +384,8 @@ final class ChatRoom extends Entity
             throw new UserDoesNotPertainsToChatRoomException();
         }
 
-        $event = new UserSawChatRoomEvent($userId);
+        $now = new DateTimeImmutable();
+        $event = new UserSawChatRoomEvent($userId, $now);
         $this->addEvent($event);
     }
 }
