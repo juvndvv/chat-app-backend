@@ -1,24 +1,34 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Shared\Domain\Entity;
 
+use App\Chat\Domain\ValueObject\OptionalDateTimeValueObject;
+use App\Shared\Domain\Event\Event;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\LogicException;
 use App\Shared\Domain\ValueObject\DateTimeValueObject;
-use Closure;
 use DateTimeImmutable;
 
 abstract class Entity
 {
     protected array $events = [];
-
     protected DateTimeValueObject $createdAt;
     protected DateTimeValueObject $updatedAt;
-    protected DateTimeValueObject $deletedAt;
+    protected OptionalDateTimeValueObject $deletedAt;
+
+    abstract function getId(): string;
+    abstract function setId(string $id): self;
 
     public function getEvents(): array
     {
         return array_splice($this->events, 0);
+    }
+
+    public function addEvent(Event $event): void
+    {
+        $this->events[] = $event;
     }
 
     protected function allParametersAreNull(...$params): bool
@@ -28,6 +38,7 @@ abstract class Entity
                 return false;
             }
         }
+
         return true;
     }
 
@@ -53,9 +64,9 @@ abstract class Entity
         return $this;
     }
 
-    public function setDeletedAt(DateTimeImmutable $deletedAt): self
+    public function setDeletedAt(?DateTimeImmutable $deletedAt): self
     {
-        $this->deletedAt = DateTimeValueObject::create($deletedAt);
+        $this->deletedAt = OptionalDateTimeValueObject::create($deletedAt);
         return $this;
     }
 
@@ -77,13 +88,33 @@ abstract class Entity
         return $this->updatedAt->value();
     }
 
-    public function getDeletedAt(): DateTimeImmutable
+    public function getDeletedAt(): ?DateTimeImmutable
     {
         if (!isset($this->deletedAt)) {
             throw new LogicException('The deleted at must be set');
         }
 
-        return $this->deletedAt->value();
+        return $this->deletedAt->isNotNull() ? $this->deletedAt->value() : null;
+    }
+
+    /**
+     * @throws LogicException
+     */
+    public function isDeleted(): bool
+    {
+        if (!isset($this->deletedAt)) {
+            throw new LogicException('The deleted at must be set');
+        }
+
+        return $this->deletedAt->isNotNull();
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function delete(): void
+    {
+        $this->deletedAt = OptionalDateTimeValueObject::create(new DateTimeImmutable());
     }
 
     /**

@@ -1,38 +1,66 @@
 <?php
 
-namespace App\Helpers;
+declare(strict_types = 1);
+
+namespace App\Shared\Domain\ValueObject;
 
 use Closure;
 
-final class ValueObjectList
+abstract class AbstractCustomCollection
 {
-    private array $list;
+    protected array $list;
 
     public function __construct()
     {
         $this->list = [];
     }
 
+    abstract public function ensureIsCorrectInstance(mixed $value): void;
+
+    abstract public function getValue(mixed $value): mixed;
+
     public function set(array $list): void
     {
+        foreach ($list as $item) {
+            static::ensureIsCorrectInstance($item);
+        }
+
         $this->list = $list;
     }
 
-    public function append($value)
+    public function append($value): void
     {
+        static::ensureIsCorrectInstance($value);
         $this->list[] = $value;
     }
 
-    public function prepend($value)
+    public function prepend($value): void
     {
+        static::ensureIsCorrectInstance($value);
         array_unshift($this->list, $value);
     }
 
     public function delete($value): bool
     {
+        static::ensureIsCorrectInstance($value);
+
+        foreach ($this->list as $i => $item) {
+            if (static::getValue($item) === static::getValue($value)) {
+                unset($this->list[$i]);
+                $this->list = array_values($this->list); // Reindexa el array
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function contains($value): bool
+    {
+        static::ensureIsCorrectInstance($value);
+
         foreach ($this->list as $item) {
-            if ($item->value() == $value) {
-                unset($this->list[$item]);
+            if (static::getValue($item) === static::getValue($value)) {
                 return true;
             }
         }
@@ -43,17 +71,6 @@ final class ValueObjectList
     public function count(): int
     {
         return count($this->list);
-    }
-
-    public function contains($value): bool
-    {
-        foreach ($this->list as $item) {
-            if ($item->value() == $value) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public function forEach(Closure $closure): void

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Shared\Domain\ValueObject;
+declare(strict_types = 1);
 
-use App\Shared\Domain\Exception\InvalidArgumentException;
+namespace App\Shared\Domain\ValueObject;
 
 /**
  * Class BooleanValueObject

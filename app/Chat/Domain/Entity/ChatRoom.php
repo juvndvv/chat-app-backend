@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Chat\Domain\Entity;
 
 use App\Chat\Domain\Exception\ChatRoomCannotBeEmptyException;
+use App\Chat\Domain\UserSawChatRoomEvent;
 use App\Chat\Domain\ValueObject\ChatRoomDescription;
 use App\Chat\Domain\ValueObject\ChatRoomId;
+use App\Chat\Domain\ValueObject\ChatRoomMembersCollection;
 use App\Chat\Domain\ValueObject\ChatRoomName;
+use App\Chat\Domain\ValueObject\ChatRoomMessageCollection;
 use App\Chat\Domain\ValueObject\MessageId;
-use App\Helpers\ValueObjectList;
 use App\Shared\Domain\Entity\Entity;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\LogicException;
@@ -17,6 +19,7 @@ use App\Shared\Domain\Exception\MessageAlreadyInChatException;
 use App\Shared\Domain\Exception\UserAlreadyInChatRoomException;
 use App\Shared\Domain\Exception\UserDoesNotPertainsToChatRoomException;
 use App\User\Domain\ValueObject\UserId;
+use DateTimeImmutable;
 
 /**
  * Represents a chat room.
@@ -32,8 +35,8 @@ final class ChatRoom extends Entity
     private ChatRoomId $id;
     private ChatRoomName $name;
     private ChatRoomDescription $description;
-    private ValueObjectList $members;
-    private ValueObjectList $messages;
+    private ChatRoomMembersCollection $members;
+    private ChatRoomMessageCollection $messages;
     private UserId $creatorId;
 
     /**
@@ -89,12 +92,13 @@ final class ChatRoom extends Entity
             throw new ChatRoomCannotBeEmptyException();
         }
 
-        $this->members = new ValueObjectList();
+        $this->members = new ChatRoomMembersCollection();
 
         $this->members->set(array_map(
             function (string $member) {
                 return UserId::create($member);
-            }, $members));
+            }, $members)
+        );
 
         return $this;
     }
@@ -107,7 +111,7 @@ final class ChatRoom extends Entity
      */
     public function setMessages(array $messages): self
     {
-        $this->messages = new ValueObjectList();
+        $this->messages = new ChatRoomMessageCollection();
         $this->messages->set($messages);
         return $this;
     }
@@ -224,18 +228,18 @@ final class ChatRoom extends Entity
     }
 
     /**
-     * Checks if the chat room is deleted.
+     * Gets the number of messages in the chat room.
      *
-     * @return bool True if the chat room is deleted, otherwise false.
-     * @throws LogicException If the deletion status is not set.
+     * @return int The number of members.
+     * @throws LogicException If the members are not set.
      */
-    public function isDeleted(): bool
+    public function getMessagesCount(): int
     {
-        if (!isset($this->deletedAt)) {
-            throw new LogicException('The deleted at must be set');
+        if (!isset($this->messages)) {
+            throw new LogicException('ChatRoom\'s messages has not been set');
         }
 
-        return $this->deletedAt->value() !== null;
+        return $this->messages->count();
     }
 
     /**
@@ -309,6 +313,7 @@ final class ChatRoom extends Entity
      * @param string $member The ID of the member to remove.
      * @throws LogicException If the members list is not set.
      * @throws UserDoesNotPertainsToChatRoomException If the member is not in the chat room.
+     * @throws InvalidArgumentException If the user's id is not valid
      */
     public function removeMember(string $member): void
     {
@@ -316,6 +321,7 @@ final class ChatRoom extends Entity
             throw new LogicException('Chat room\'s member variable is not set');
         }
 
+        $member = UserId::create($member);
         $success = $this->members->delete($member);
 
         if (!$success) {
@@ -332,7 +338,7 @@ final class ChatRoom extends Entity
      * @throws MessageAlreadyInChatException If the message is already in the chat room.
      * @throws InvalidArgumentException If the message's id is not valid
      */
-    public function addMessage(string $newMessage): void
+    public function addMessage(AbstractMessage $newMessage): void
     {
         if ($this->hasMessage($newMessage)) {
             throw new MessageAlreadyInChatException();
@@ -348,20 +354,38 @@ final class ChatRoom extends Entity
      *
      * @param string $member The ID of the member to check.
      * @return bool True if the member is in the chat room, otherwise false.
+     * @throws InvalidArgumentException
      */
     public function hasMember(string $member): bool
     {
-        return $this->members->contains($member) || $this->creatorId->value() === $member;
+        $member = UserId::create($member);
+
+        return $this->members->contains($member) || $this->creatorId->value() === $member->value();
     }
 
     /**
      * Checks if a message is in the chat room.
      *
-     * @param string $message The ID of the message to check.
+     * @param AbstractMessage $message The ID of the message to check.
      * @return bool True if the message is in the chat room, otherwise false.
      */
-    public function hasMessage(string $message): bool
+    public function hasMessage(AbstractMessage $message): bool
     {
         return $this->messages->contains($message);
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     * @throws UserDoesNotPertainsToChatRoomException
+     */
+    public function markMessagesAsViewed(string $userId): void
+    {
+        if (!$this->hasMember($userId)) {
+            throw new UserDoesNotPertainsToChatRoomException();
+        }
+
+        $now = new DateTimeImmutable();
+        $event = new UserSawChatRoomEvent($userId, $now);
+        $this->addEvent($event);
     }
 }

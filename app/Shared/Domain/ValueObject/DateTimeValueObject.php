@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Shared\Domain\ValueObject;
 
 use App\Shared\Domain\Exception\InvalidArgumentException;
@@ -29,7 +31,7 @@ class DateTimeValueObject
      *
      * @throws InvalidArgumentException If the provided value is not a valid DateTime.
      */
-    private function __construct(DateTimeImmutable $value)
+    protected function __construct(DateTimeImmutable $value)
     {
         $this->ensureIsValid($value);
         $this->value = $value;
