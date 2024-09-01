@@ -7,14 +7,20 @@ namespace App\Chat\Domain\Entity;
 use App\Chat\Domain\Exception\MessageCreationException;
 use App\Chat\Domain\ValueObject\MessageContent;
 use App\Chat\Domain\ValueObject\MessageId;
+use App\Helpers\MessageTypeEnum;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\LogicException;
 use DateTimeImmutable;
 use Random\RandomException;
 
-final class TextMessage extends AbstractMessage
+class TextMessage extends AbstractMessage
 {
     private MessageContent $content;
+
+    public function __construct()
+    {
+        $this->setMessageType(MessageTypeEnum::TEXT);
+    }
 
     /**
      * Sets the content of the message.

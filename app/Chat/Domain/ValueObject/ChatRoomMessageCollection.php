@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace App\Chat\Domain\ValueObject;
 
 use App\Chat\Domain\Entity\AbstractMessage;
-use App\Helpers\AbstractCustomCollection;
+use App\Shared\Domain\ValueObject\AbstractCustomCollection;
 use LogicException;
 
 final class ChatRoomMessageCollection extends AbstractCustomCollection

@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Shared\Domain\Entity;
 
 use App\Chat\Domain\ValueObject\OptionalDateTimeValueObject;
+use App\Shared\Domain\Event\Event;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\LogicException;
 use App\Shared\Domain\ValueObject\DateTimeValueObject;
@@ -23,6 +24,11 @@ abstract class Entity
     public function getEvents(): array
     {
         return array_splice($this->events, 0);
+    }
+
+    public function addEvent(Event $event): void
+    {
+        $this->events[] = $event;
     }
 
     protected function allParametersAreNull(...$params): bool

@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Chat\Domain\ValueObject;
 
-use App\Helpers\AbstractCustomCollection;
 use App\Shared\Domain\Exception\LogicException;
+use App\Shared\Domain\ValueObject\AbstractCustomCollection;
 use App\User\Domain\ValueObject\UserId;
 
 final class ChatRoomMembersCollection extends AbstractCustomCollection

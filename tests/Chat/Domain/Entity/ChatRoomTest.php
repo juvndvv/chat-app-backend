@@ -2,7 +2,9 @@
 
 namespace Tests\Chat\Domain\Entity;
 
+use App\Chat\Domain\UserSawChatRoomEvent;
 use App\Shared\Domain\Exception\UserAlreadyInChatRoomException;
+use App\Shared\Domain\Exception\UserDoesNotPertainsToChatRoomException;
 use Tests\TestCase;
 
 final class ChatRoomTest extends TestCase
@@ -68,5 +70,31 @@ final class ChatRoomTest extends TestCase
         );
 
         $chatRoom->addMember($owner->getId());
+    }
+
+    public function testMarkMessagesAsViewedGeneratesEvent()
+    {
+        $chatRoom = $this->createTestChatRoomEntity();
+        $user = $this->createTestUserEntity();
+
+        $chatRoom->addMember($user->getId());
+        $chatRoom->markMessagesAsViewed($user->getId());
+
+        $event = $chatRoom->getEvents()[0];
+
+        $this->assertInstanceOf(UserSawChatRoomEvent::class, $event);
+        $payload = $event->getPayload();
+        $this->assertCount(1, $payload);
+        $this->assertArrayHasKey('user', $payload);
+        $this->assertEquals($user->getId(), $payload['user']);
+    }
+
+    public function testMarkMessagesAsViewedFails()
+    {
+        $chatRoom = $this->createTestChatRoomEntity();
+        $user = $this->createTestUserEntity();
+
+        $this->expectException(UserDoesNotPertainsToChatRoomException::class);
+        $chatRoom->markMessagesAsViewed($user->getId());
     }
 }

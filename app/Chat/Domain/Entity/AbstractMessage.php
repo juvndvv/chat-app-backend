@@ -6,7 +6,9 @@ namespace App\Chat\Domain\Entity;
 
 use App\Chat\Domain\ValueObject\MessageId;
 use App\Chat\Domain\ValueObject\MessageIsSent;
+use App\Chat\Domain\ValueObject\MessageType;
 use App\Chat\Domain\ValueObject\MessageViewersCollection;
+use App\Helpers\MessageTypeEnum;
 use App\Shared\Domain\Entity\Entity;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\LogicException;
@@ -17,6 +19,7 @@ use DateTimeImmutable;
 abstract class AbstractMessage extends Entity
 {
     protected MessageId $id;
+    protected MessageType $type;
     protected UserId $userId;
     protected MessageIsSent $isSent;
     protected MessageViewersCollection $viewers;
@@ -31,6 +34,12 @@ abstract class AbstractMessage extends Entity
     public function setId(string $id): self
     {
         $this->id = MessageId::create($id);
+        return $this;
+    }
+
+    public function setMessageType(MessageTypeEnum $type): self
+    {
+        $this->type = MessageType::create($type);
         return $this;
     }
 
@@ -82,6 +91,15 @@ abstract class AbstractMessage extends Entity
         return $this->id->value();
     }
 
+    public function isTextMessage(): bool
+    {
+        if (!isset($this->type)) {
+            throw new LogicException('Message type is not set');
+        }
+
+        return $this->type->isText();
+    }
+
     /**
      * Gets the user ID who sent the message.
      *
@@ -99,6 +117,10 @@ abstract class AbstractMessage extends Entity
 
     public function getViewers(): array
     {
+        if (!isset($this->viewers)) {
+            throw new LogicException('Message\'s viewers is not set');
+        }
+
         return $this->viewers->map(function ($viewers) {
             return [
                 'userId' => $viewers[0]->value(),
@@ -116,13 +138,15 @@ abstract class AbstractMessage extends Entity
         return $this->isSent->value();
     }
 
-    public function markAsViewed(string $userId): void
+    public function markAsViewed(string $userId, DateTimeImmutable $dateTime): void
     {
         if (!isset($this->viewers)) {
             throw new LogicException('Message\'s viewers is not set');
         }
 
-        $this->viewers->append([UserId::create($userId), DateTimeValueObject::create(new DateTimeImmutable())]);
+        $this->viewers->append([UserId::create($userId), DateTimeValueObject::create($dateTime)]);
+
+        // TODO generate event
     }
 
 

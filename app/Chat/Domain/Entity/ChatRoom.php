@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Chat\Domain\Entity;
 
 use App\Chat\Domain\Exception\ChatRoomCannotBeEmptyException;
+use App\Chat\Domain\UserSawChatRoomEvent;
 use App\Chat\Domain\ValueObject\ChatRoomDescription;
 use App\Chat\Domain\ValueObject\ChatRoomId;
 use App\Chat\Domain\ValueObject\ChatRoomMembersCollection;
@@ -18,6 +19,7 @@ use App\Shared\Domain\Exception\MessageAlreadyInChatException;
 use App\Shared\Domain\Exception\UserAlreadyInChatRoomException;
 use App\Shared\Domain\Exception\UserDoesNotPertainsToChatRoomException;
 use App\User\Domain\ValueObject\UserId;
+use DateTimeImmutable;
 
 /**
  * Represents a chat room.
@@ -335,7 +337,7 @@ final class ChatRoom extends Entity
      * @throws MessageAlreadyInChatException If the message is already in the chat room.
      * @throws InvalidArgumentException If the message's id is not valid
      */
-    public function addMessage(string $newMessage): void
+    public function addMessage(AbstractMessage $newMessage): void
     {
         if ($this->hasMessage($newMessage)) {
             throw new MessageAlreadyInChatException();
@@ -351,21 +353,38 @@ final class ChatRoom extends Entity
      *
      * @param string $member The ID of the member to check.
      * @return bool True if the member is in the chat room, otherwise false.
+     * @throws InvalidArgumentException
      */
     public function hasMember(string $member): bool
     {
         $member = UserId::create($member);
+
         return $this->members->contains($member) || $this->creatorId->value() === $member->value();
     }
 
     /**
      * Checks if a message is in the chat room.
      *
-     * @param string $message The ID of the message to check.
+     * @param AbstractMessage $message The ID of the message to check.
      * @return bool True if the message is in the chat room, otherwise false.
      */
     public function hasMessage(AbstractMessage $message): bool
     {
         return $this->messages->contains($message);
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     * @throws UserDoesNotPertainsToChatRoomException
+     */
+    public function markMessagesAsViewed(string $userId): void
+    {
+        if (!$this->hasMember($userId)) {
+            throw new UserDoesNotPertainsToChatRoomException();
+        }
+
+        // TODO generate event
+        $event = new UserSawChatRoomEvent($userId);
+        $this->addEvent($event);
     }
 }
