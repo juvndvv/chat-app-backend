@@ -198,17 +198,6 @@ final class TextMessage extends Entity
     }
 
     /**
-     * Updates the timestamp for when the message was last updated.
-     *
-     * @return void
-     * @throws InvalidArgumentException If the timestamp is invalid.
-     */
-    private function performUpdate(): void
-    {
-        $this->updatedAt = DateTimeValueObject::create(new DateTimeImmutable());
-    }
-
-    /**
      * Creates a new instance of the TextMessage entity with mandatory fields.
      *
      * @param string $userId The user ID who sent the message.

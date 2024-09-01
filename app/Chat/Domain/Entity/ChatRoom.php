@@ -18,7 +18,6 @@ use App\Shared\Domain\Exception\UserDoesNotPertainsToChatRoomException;
 use App\Shared\Domain\ValueObject\DateTimeValueObject;
 use App\User\Domain\ValueObject\UserId;
 use DateTimeImmutable;
-use SplObjectStorage;
 
 final class ChatRoom extends Entity
 {
@@ -98,16 +97,28 @@ final class ChatRoom extends Entity
 
     public function getName(): string
     {
+        if (!isset($this->name)) {
+            throw new LogicException('ChatRoom\'s has not been created');
+        }
+
         return $this->name->value();
     }
 
     public function getDescription(): string
     {
+        if (!isset($this->description)) {
+            throw new LogicException('ChatRoom\'s description is not set');
+        }
+
         return $this->description->value();
     }
 
     public function getMembers(): array
     {
+        if (!isset($this->members)) {
+            throw new LogicException('ChatRoom\'s members has not been set');
+        }
+
         $members = $this->members->map(function (UserId $member) {
             return $member->value();
         });
@@ -117,11 +128,86 @@ final class ChatRoom extends Entity
         return $members;
     }
 
+    public function getMembersCount(): int
+    {
+        if (!isset($this->members)) {
+            throw new LogicException('ChatRoom\'s members has not been set');
+        }
+
+        return $this->members->count();
+    }
+
     public function getMessages(): array
     {
+        if (!isset($this->messages)) {
+            throw new LogicException('Messages has not been set');
+        }
+
         return $this->messages->map(function (MessageId $messageId) {
             return $messageId->value();
         });
+    }
+
+    public function getCreatedAt(): DateTimeImmutable
+    {
+        if (!isset($this->createdAt)) {
+            throw new LogicException('The created at must be set');
+        }
+
+        return $this->createdAt->value();
+    }
+
+    public function getUpdatedAt(): DateTimeImmutable
+    {
+        if (!isset($this->updatedAt)) {
+            throw new LogicException('The updated at must be set');
+        }
+
+        return $this->updatedAt->value();
+    }
+
+    public function getDeletedAt(): DateTimeImmutable
+    {
+        if (!isset($this->deletedAt)) {
+            throw new LogicException('The deleted at must be set');
+        }
+
+        return $this->deletedAt->value();
+    }
+
+    public function isDeleted(): bool
+    {
+        if (!isset($this->deletedAt)) {
+            throw new LogicException('The deleted at must be set');
+        }
+
+        return $this->deletedAt->value() !== null;
+    }
+
+    public function updateName(string $name, bool $isBulkUpdate = false): self
+    {
+        $this->setName($name);
+
+        if (!$isBulkUpdate) {
+            $this->performUpdate();
+
+            // TODO generate event
+        }
+
+        return $this;
+    }
+
+    public function updateDescription(string $description, bool $isBulkUpdate): self
+    {
+        $this->setDescription($description);
+
+        if (!$isBulkUpdate) {
+            $this->performUpdate();
+
+            // TODO generate event
+        }
+
+        return $this;
     }
 
     public function addMember(string $newMember): void
@@ -130,21 +216,12 @@ final class ChatRoom extends Entity
             throw new LogicException('Chat room\'s member variable is not set');
         }
 
-        if ($this->hasMember($newMember) || $this->creatorId->value() === $newMember) {
+        if ($this->hasMember($newMember)) {
             throw new UserAlreadyInChatRoomException();
         }
 
         $this->members->append(UserId::create($newMember));
-        // TODO generate event
-    }
 
-    public function addMessage(string $newMessage): void
-    {
-        if ($this->hasMessage($newMessage)) {
-            throw new MessageAlreadyInChatException();
-        }
-
-        $this->messages->append(MessageId::create($newMessage));
         // TODO generate event
     }
 
@@ -159,11 +236,24 @@ final class ChatRoom extends Entity
         if (!$success) {
             throw new UserDoesNotPertainsToChatRoomException();
         }
+
+        // TODO generate event
+    }
+
+    public function addMessage(string $newMessage): void
+    {
+        if ($this->hasMessage($newMessage)) {
+            throw new MessageAlreadyInChatException();
+        }
+
+        $this->messages->append(MessageId::create($newMessage));
+
+        // TODO generate event
     }
 
     public function hasMember(string $member): bool
     {
-        return $this->members->contains($member);
+        return $this->members->contains($member) || $this->creatorId->value() === $member;
     }
 
     public function hasMessage(string $message): bool

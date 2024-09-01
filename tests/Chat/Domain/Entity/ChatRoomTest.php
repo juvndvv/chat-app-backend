@@ -34,7 +34,15 @@ final class ChatRoomTest extends TestCase
 
     public function testAddMemberSuccess()
     {
+        $user = $this->createTestUserEntity();
 
+        $chatRoom = $this->createTestChatRoomEntity();
+        $memberCount = $chatRoom->getMembersCount();
+
+        $chatRoom->addMember($user->getId());
+
+        $this->assertTrue($chatRoom->hasMember($user->getId()));
+        $this->assertEquals($memberCount + 1, $chatRoom->getMembersCount());
     }
 
     public function testAddMemberFails()

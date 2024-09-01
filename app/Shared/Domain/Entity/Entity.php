@@ -2,6 +2,8 @@
 
 namespace App\Shared\Domain\Entity;
 
+use App\Shared\Domain\Exception\InvalidArgumentException;
+use App\Shared\Domain\ValueObject\DateTimeValueObject;
 use Closure;
 
 abstract class Entity
@@ -31,5 +33,16 @@ abstract class Entity
     public static function build(): static
     {
         return new static();
+    }
+
+
+    /**
+     * Updates the entity's last update timestamp to the current time.
+     *
+     * @throws InvalidArgumentException If the timestamp is invalid.
+     */
+    protected function performUpdate(): void
+    {
+        $this->updatedAt = DateTimeValueObject::create(new DateTimeImmutable());
     }
 }

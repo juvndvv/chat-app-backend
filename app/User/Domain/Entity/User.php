@@ -422,16 +422,6 @@ final class User extends Entity
     }
 
     /**
-     * Updates the user's last update timestamp to the current time.
-     *
-     * @throws InvalidArgumentException If the timestamp is invalid.
-     */
-    private function performUpdate(): void
-    {
-        $this->updatedAt = DateTimeValueObject::create(new DateTimeImmutable());
-    }
-
-    /**
      * Checks if the necessary fields to retrieve the full name are set.
      *
      * This method verifies if the `name`, `firstLastName`, and `secondLastName` properties
